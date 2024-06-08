@@ -3,7 +3,8 @@ from pydantic import BaseModel
 from typing import Dict
 from rich.console import Console
 from dataclasses import dataclass
-import subprocess
+from subprocess import Popen, PIPE
+from sewerpipe.changedir import chdir
 
 @dataclass
 class Task:
@@ -43,10 +44,23 @@ class Task:
             for flag in self._flags
         ]
 
-    def run(self, path_to_python: Path = Path("python")):
+    def run(self, path_to_python: Path = Path("python"), env: Dict[str, str] | None = None, workdir: Path = None):
         console = Console()
         console.print(f"[green bold]Running {self.name}...[/green bold]")
-        proc = subprocess.run([str(path_to_python), "-m", self.module, *self.parameters, *self.flags], check=True)
+        if workdir is None:
+            workdir = Path.cwd()
+        with chdir(workdir):
+            console.print(f"[green]Working directory: {workdir}[/green]")
+            command = [str(path_to_python), "-m", self.module, *self.parameters, *self.flags]
+            with Popen(command, stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True, env=env) as proc:
+                for line in proc.stdout:
+                    console.print(line, end="")
+        if proc.returncode != 0:
+            console.print(f"[red]Task {self.name} failed with return code {proc.returncode}[/red]")
+            console.print(f"[red]Command: {proc.args}[/red]")
+            console.print(f"[red]Output: {proc.stdout}[/red]")
+            console.print(f"[red]Error: {proc.stderr}[/red]")
+            raise ValueError(f"Task {self.name} failed with return code {proc.returncode}")
         return proc.returncode
 
     def __rshift__(self, other):
@@ -66,18 +80,11 @@ class TaskChain:
         return TaskChain(self, other)
 
 
-TASK_STATE = {
-    "TASK_LIST_RETRIEVED": False
-}
-
-
 def get_tasks_from_module(module):
     """Retrieves all task definitions from a loaded Python module."""
     console = Console()
     all_tasks = dict([(name, klass) for name, klass in module.__dict__.items() if isinstance(klass, Task)])
-    if not TASK_STATE["TASK_LIST_RETRIEVED"]:
-        console.print(f"[green]Found tasks: {[f'{name} ({task.name})' for name, task in all_tasks.items()]}[/green]")
-    TASK_STATE["TASK_LIST_RETRIEVED"] = True
+    console.print(f"[green]Found tasks: {[f'{name} ({task.name})' for name, task in all_tasks.items()]}[/green]")
     if len(all_tasks) == 0:
         console.print("[red]No tasks found in the provided module.[/red]")
         return dict()
