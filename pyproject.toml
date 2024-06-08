@@ -24,3 +24,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 sppe = "sewerpipe.main:main"
+sewerpipe = "sewerpipe.main:main"
