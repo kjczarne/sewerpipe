@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sewerpipe"
-version = "0.1.1"
+version = "0.2.1"
 description = "Ties your debbuging workflow to automated workflows elsewhere"
 authors = ["Chris Czarnecki <cczarnec@uwaterloo.ca>"]
 license = "MIT"
