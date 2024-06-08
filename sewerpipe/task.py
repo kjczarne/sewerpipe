@@ -74,3 +74,14 @@ def get_tasks_from_module(module):
     if len(all_tasks) == 0:
         console.print("[red]No tasks found in the provided module.[/red]")
         return dict()
+    return all_tasks
+
+
+def get_task_from_module(module, task_name: str):
+    """Retrieves a task definition from a loaded Python module."""
+    tasks_found = get_tasks_from_module(module).values()
+    tasks_dict = {task.name: task for task in tasks_found}
+    task = tasks_dict.get(task_name, None)
+    if task is None:
+        raise ValueError(f"Task {task_name} not found in the provided module.")
+    return task

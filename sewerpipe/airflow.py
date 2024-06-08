@@ -1,3 +1,4 @@
+from typing import Dict
 from pathlib import Path
 from datetime import datetime
 from airflow.decorators import task as airflow_task
@@ -5,14 +6,20 @@ from sewerpipe.task import Task
 
 
 def create_airflow_task(task: Task,
-                        path_to_python: Path = Path("python")):
+                        path_to_python: Path = Path("python"),
+                        env: Dict[str, str] | None = None):
     if str(path_to_python) == "python":
         @airflow_task(task_id=task.name)
         def _task():
-            task.run()
+            import os
+            import sys
+            os.environ.update(env)
+            task.run(path_to_python=sys.executable)
     else:
         @airflow_task.external_python(task_id=task.name, python_path=path_to_python)
         def _task():
+            import os
+            os.environ.update(env)
             task.run(path_to_python=path_to_python)
     return _task
 

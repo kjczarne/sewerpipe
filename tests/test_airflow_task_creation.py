@@ -1,6 +1,6 @@
 import unittest
 from airflow.decorators.python import _PythonDecoratedOperator
-from sewerpipe.config import Task
+from sewerpipe.task import Task
 from sewerpipe.airflow import create_airflow_task, create_airflow_tasks
 
 

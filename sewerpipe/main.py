@@ -3,7 +3,7 @@ import click
 from rich.console import Console
 from sewerpipe.workflows import get_workflow
 from sewerpipe.task import get_tasks_from_module
-from sewerpipe.utils import magical_module_import
+from sewerpipe.utils import load_module
 
 
 @click.command()
@@ -19,7 +19,7 @@ def run(path: Path, python_interpreter: Path, workflow: str):
     console.print(f"[blue]Provided path: {path}[/blue]")
 
     # This blackmagic f***ery is needed to import the module from a given path:
-    module = magical_module_import(path)
+    module = load_module(path)
 
     # Here's where a registering decorator comes in handy:
     workflow = get_workflow(workflow)
@@ -45,7 +45,7 @@ def convert(path: Path, output: Path, to: str, print_only: bool, launch_json_ver
     match to:
         case "vscode":
             from sewerpipe.vscode import generate_launch_json
-            module = magical_module_import(path)
+            module = load_module(path)
             all_tasks = get_tasks_from_module(module)
             ret = generate_launch_json(all_tasks.values(),
                                        output,

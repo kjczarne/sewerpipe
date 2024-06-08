@@ -1,4 +1,4 @@
-from sewerpipe.config import Task
+from sewerpipe.task import Task
 from sewerpipe.workflows import workflow
 
 t1 = Task(

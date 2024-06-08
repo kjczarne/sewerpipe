@@ -1,7 +1,7 @@
 import unittest
 from rich.console import Console
 from sewerpipe.vscode import generate_launch_json
-from sewerpipe.config import Task
+from sewerpipe.task import Task
 
 
 class TestVSCodeJsonGeneration(unittest.TestCase):

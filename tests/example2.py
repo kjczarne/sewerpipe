@@ -1,21 +1,11 @@
-from sewerpipe.config import Config, Task
+from pathlib import Path
 from sewerpipe.workflows import workflow
+from sewerpipe.utils import load_module
+from sewerpipe.task import get_task_from_module
 
-t1 = Task(
-    name="Data Generation",
-    module="uarr.generation",
-    parameters_and_flags=dict(
-        config="configs/0_gen/gen_chi_squared.toml"
-    )
-)
-
-t2 = Task(
-    name="Data Noising",
-    module="uarr.noising",
-    parameters_and_flags=dict(
-        config="configs/0_noising/noising_cfg_synth.toml"
-    )
-)
+module = load_module(Path("tests/example.py"))
+t1 = get_task_from_module(module, "Example 1")
+t2 = get_task_from_module(module, "Example 2")
 
 
 @workflow
