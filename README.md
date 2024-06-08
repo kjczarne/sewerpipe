@@ -1,4 +1,6 @@
-# Sewer
+# Sewerpipe
+
+Sewerpipe lets you define workflows based entirely on running Python modules as tasks:
 
 
 ```python
@@ -25,14 +27,19 @@ t2 = Task(
 
 
 @workflow
-def generate_data_workflow():
+def workflow():
     (t1 >> t2).run()
 
 
 def main():
-    generate_data_workflow()
+    workflow()
 
 
 if __name__ == "__main__":
     main()
 ```
+
+The syntax is similar to Airflow DAGs, quite intentionally. There are three ways to use it:
+- Direct triggering of workflows via `sppe run`
+- Conversion of the defined workflows to VSCode `launch.json`, so that your debug configuration is up to date with what is defined as a single-source-of-truth workflow (`sppe convert --to vscode`)
+- Library use to enable seamless creation of Airflow DAGs (via the `airflow.create_airflow_tasks` function)
