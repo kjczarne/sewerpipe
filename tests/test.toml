@@ -1,0 +1,15 @@
+[[tasks]]
+
+name = "Data Generation"
+module = "uarr.generation"
+
+[tasks.parameters_and_flags]
+config = "configs/0_gen/gen_chi_squared.toml"
+
+[[tasks]]
+
+name = "Noising"
+module = "uarr.noising"
+
+[task.parameters_and_flags]
+config = "configs/0_noising/noising_cfg_synth.toml"
