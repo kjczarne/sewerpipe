@@ -58,9 +58,9 @@ class TaskChain:
     left: Task
     right: Task
 
-    def run(self):
-        self.left.run()
-        self.right.run()
+    def run(self, path_to_python: Path = Path("python")):
+        self.left.run(path_to_python)
+        self.right.run(path_to_python)
 
     def __rshift__(self, other):
         return TaskChain(self, other)
