@@ -8,7 +8,8 @@ from sewerpipe.task import Task
 def generate_launch_json(tasks: List[Task] | Task,
                          launch_json_path: Path = ".vscode/launch.json",
                          launch_json_version: str = "0.2.0",
-                         return_or_write: Literal["return", "write"] = "write"):
+                         return_or_write: Literal["return", "write"] = "write",
+                         debugger_type: Literal["python", "debugpy"] = "debugpy"):
     console = Console()
     if isinstance(tasks, Task):
         tasks = [tasks]
@@ -17,7 +18,7 @@ def generate_launch_json(tasks: List[Task] | Task,
         "configurations": [
             {
                 "name": f"{wfcfg.name}",
-                "type": "python",
+                "type": debugger_type,
                 "request": "launch",
                 "module": f"{wfcfg.module}",
                 "args": wfcfg.parameters + wfcfg.flags,
