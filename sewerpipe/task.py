@@ -66,11 +66,18 @@ class TaskChain:
         return TaskChain(self, other)
 
 
+TASK_STATE = {
+    "TASK_LIST_RETRIEVED": False
+}
+
+
 def get_tasks_from_module(module):
     """Retrieves all task definitions from a loaded Python module."""
     console = Console()
     all_tasks = dict([(name, klass) for name, klass in module.__dict__.items() if isinstance(klass, Task)])
-    console.print(f"[green]Found tasks: {[f'{name} ({task.name})' for name, task in all_tasks.items()]}[/green]")
+    if not TASK_STATE["TASK_LIST_RETRIEVED"]:
+        console.print(f"[green]Found tasks: {[f'{name} ({task.name})' for name, task in all_tasks.items()]}[/green]")
+    TASK_STATE["TASK_LIST_RETRIEVED"] = True
     if len(all_tasks) == 0:
         console.print("[red]No tasks found in the provided module.[/red]")
         return dict()
