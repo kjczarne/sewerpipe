@@ -16,7 +16,7 @@ def create_airflow_task(task: Task,
             os.environ.update(env)
             task.run(path_to_python=sys.executable)
     else:
-        @airflow_task.external_python(task_id=task.name, python_path=path_to_python)
+        @airflow_task.external_python(task_id=task.name, python=path_to_python)
         def _task():
             import os
             os.environ.update(env)
