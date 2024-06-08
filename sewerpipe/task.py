@@ -64,3 +64,13 @@ class TaskChain:
 
     def __rshift__(self, other):
         return TaskChain(self, other)
+
+
+def get_tasks_from_module(module):
+    """Retrieves all task definitions from a loaded Python module."""
+    console = Console()
+    all_tasks = dict([(name, klass) for name, klass in module.__dict__.items() if isinstance(klass, Task)])
+    console.print(f"[green]Found tasks: {[f'{name} ({task.name})' for name, task in all_tasks.items()]}[/green]")
+    if len(all_tasks) == 0:
+        console.print("[red]No tasks found in the provided module.[/red]")
+        return dict()

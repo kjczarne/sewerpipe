@@ -1,19 +1,9 @@
 from pathlib import Path
 import click
-import importlib.util
-import sys
 from rich.console import Console
 from sewerpipe.workflows import get_workflow
-from sewerpipe.task import Task
-
-
-def magical_module_import(path: Path):
-    module_name = "sewerpipe.current_workflow"
-    spec = importlib.util.spec_from_file_location(module_name, path)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[module_name] = module
-    spec.loader.exec_module(module)
-    return module
+from sewerpipe.task import get_tasks_from_module
+from sewerpipe.utils import magical_module_import
 
 
 @click.command()
@@ -56,11 +46,7 @@ def convert(path: Path, output: Path, to: str, print_only: bool, launch_json_ver
         case "vscode":
             from sewerpipe.vscode import generate_launch_json
             module = magical_module_import(path)
-            all_tasks = dict([(name, klass) for name, klass in module.__dict__.items() if isinstance(klass, Task)])
-            console.print(f"[green]Found tasks: {[f'{name} ({task.name})' for name, task in all_tasks.items()]}[/green]")
-            if len(all_tasks) == 0:
-                console.print("[red]No tasks found in the provided module.[/red]")
-                return
+            all_tasks = get_tasks_from_module(module)
             ret = generate_launch_json(all_tasks.values(),
                                        output,
                                        launch_json_version,
