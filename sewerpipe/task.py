@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from pydantic import BaseModel
 from typing import Dict
@@ -52,14 +53,16 @@ class Task:
         with chdir(workdir):
             console.print(f"[green]Working directory: {workdir}[/green]")
             command = [str(path_to_python), "-m", self.module, *self.parameters, *self.flags]
+            stderr_contents = ""
             with Popen(command, stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True, env=env) as proc:
                 for line in proc.stdout:
                     console.print(line, end="")
+                for line in proc.stderr:
+                    stderr_contents += line + "\n"
         if proc.returncode != 0:
             console.print(f"[red]Task {self.name} failed with return code {proc.returncode}[/red]")
             console.print(f"[red]Command: {proc.args}[/red]")
-            console.print(f"[red]Output: {proc.stdout}[/red]")
-            console.print(f"[red]Error: {proc.stderr}[/red]")
+            console.print(f"[red]Error: {stderr_contents}[/red]")
             raise ValueError(f"Task {self.name} failed with return code {proc.returncode}")
         return proc.returncode
 
